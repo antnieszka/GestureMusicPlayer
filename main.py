@@ -1,10 +1,11 @@
 import math
 import tkFont
 import numpy as np
-import cv2
+import cv2  # required 3+
 import Tkinter as tk
 import thread
 import Queue
+import time
 
 from commands import *
 
@@ -12,6 +13,9 @@ request_queue = Queue.Queue()
 result_queue = Queue.Queue()
 t = None
 debug = False
+enable_commands = False
+REALLY_NOT_DEBUG = True
+LAST_TIME = time.time()
 
 
 def submit_to_tkinter(cb, *args, **kwargs):
@@ -22,6 +26,11 @@ def submit_to_tkinter(cb, *args, **kwargs):
 def debug_toggle():
     global debug
     debug = not debug
+
+
+def toggle_commands():
+    global enable_commands
+    enable_commands = not enable_commands
 
 
 def main_tk_thread():
@@ -38,10 +47,14 @@ def main_tk_thread():
         t.after(10, timertick)
 
     t = tk.Tk()
+    # t.center_window(500, 500)
     font = tkFont.Font(family="Arial", size=18, weight=tkFont.BOLD)
-    t.configure(width=320, height=320)
-    b = tk.Button(text='debug', name='button', command=debug_toggle)
-    b.place(x=20, y=200)
+    # t.configure(width=320, height=320)
+    t.geometry('%dx%d+%d+%d' % (320, 320, 850, 200))
+    tc = tk.Button(text='enable commands', name='ec', command=toggle_commands)
+    tc.place(x=20, y=210)
+    b = tk.Button(text='debug', name='dbg', command=debug_toggle)
+    b.place(x=20, y=260)
     hull = tk.Label(t, name="hull", text="None", font=font)
     hull.place(x=20, y=10)
     defects = tk.Label(t, name="defects", text="None", font=font)
@@ -50,6 +63,10 @@ def main_tk_thread():
     defects_filtered.place(x=20, y=110)
     command = tk.Label(t, name="command", text="None", font=font)
     command.place(x=20, y=160)
+    en_command = tk.Label(t, name="en_command", text="None")
+    en_command.place(x=160, y=215)
+    en_dbg = tk.Label(t, name="en_dbg", text="None")
+    en_dbg.place(x=90, y=265)
     timertick()
     t.mainloop()
 
@@ -70,22 +87,36 @@ def command_label(a):
     t.children["command"].configure(text=str("Command = %s" % a))
 
 
-def check_command(c):
+def en_command_label(a):
+    t.children["en_command"].configure(text=str("(%s)" % a))
+
+
+def en_dbg_label(a):
+    t.children["en_dbg"].configure(text=str("(%s)" % a))
+
+
+def check_command(c, exe):
     if c == 1:
-        # play()
+        if REALLY_NOT_DEBUG and exe:
+            play()
         return "PLAY"
     elif c == 2:
-        # pause()
+        if REALLY_NOT_DEBUG and exe:
+            pause()
         return "PAUSE"
     elif c == 3:
-        # move_next()
+        if REALLY_NOT_DEBUG and exe:
+            move_next()
         return "NEXT"
     elif c == 4:
-        # move_prev()
+        if REALLY_NOT_DEBUG and exe:
+            move_prev()
         return "PREVIOUS"
     elif c == 5:
-        # vol_up()
-        return "VOLUME UP"
+        # if REALLY_NOT_DEBUG and exe:
+        #     vol_down()
+        return "VOLUME CONTROL (disabled)"
+    return None
 
 
 if __name__ == '__main__':
@@ -158,17 +189,26 @@ if __name__ == '__main__':
 
         cv2.imshow('input', img)
 
-        # check what command to execute and run it
-        com = check_command(count_defects)
-
         k = cv2.waitKey(50)
         # got ESC key? if yes - exit!
         if k == 27:
             break
 
+        # do not 'change' command to quickly and wait after last one
+        if time.time() - LAST_TIME > 5 and enable_commands:
+            exe = True
+            LAST_TIME = time.time()
+        else:
+            exe = False
+
+        # check what command to execute and run it
+        com = check_command(count_defects, exe)
+
         # submit some data to GUI
         submit_to_tkinter(hull_label, str(hull.shape[0]))
         submit_to_tkinter(defects_label, str(defects.shape[0]))
         submit_to_tkinter(defects_filtered_label, str(count_defects))
+        submit_to_tkinter(en_command_label, enable_commands)
+        submit_to_tkinter(en_dbg_label, debug)
         if com:
             submit_to_tkinter(command_label, com)

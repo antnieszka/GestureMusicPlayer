@@ -20,3 +20,4 @@ Command music with simple hand gestures.
 - Gesture-opencv project on GitHub https://github.com/vipul-sharma20/gesture-opencv
 - WX non-blocking GUI: https://wiki.wxpython.org/Non-Blocking%20Gui
 - Multithreading in TKinter: http://stackoverflow.com/questions/1198262/tkinter-locks-python-when-icon-loaded-and-tk-mainloop-in-a-thread
+- http://vipulsharma20.blogspot.com/2015/03/gesture-recognition-using-opencv-python.html
