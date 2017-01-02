@@ -15,6 +15,7 @@ t = None
 debug = False
 enable_commands = False
 REALLY_NOT_DEBUG = True
+COOLDOWN = 5
 LAST_TIME = time.time()
 
 
@@ -41,19 +42,22 @@ def main_tk_thread():
             cb, args, kwargs = request_queue.get_nowait()
         except Queue.Empty:
             pass
-        else:
+        else:  # if no exception was raised
             retval = cb(*args, **kwargs)
             result_queue.put(retval)
+        # reschedule after some time
         t.after(10, timertick)
 
+    # create main Tk window
     t = tk.Tk()
-    # t.center_window(500, 500)
-    font = tkFont.Font(family="Arial", size=18, weight=tkFont.BOLD)
-    # t.configure(width=320, height=320)
+    t.title("Debug controls")
     t.geometry('%dx%d+%d+%d' % (320, 320, 850, 200))
-    tc = tk.Button(text='enable commands', name='ec', command=toggle_commands)
+    # set font for labels
+    font = tkFont.Font(family="Arial", size=18, weight=tkFont.BOLD)
+    # create buttons, labels
+    tc = tk.Button(text='enable commands', name='ec', command=toggle_commands, width='15')
     tc.place(x=20, y=210)
-    b = tk.Button(text='debug', name='dbg', command=debug_toggle)
+    b = tk.Button(text='debug mode', name='dbg', command=debug_toggle, width='15')
     b.place(x=20, y=260)
     hull = tk.Label(t, name="hull", text="None", font=font)
     hull.place(x=20, y=10)
@@ -66,17 +70,20 @@ def main_tk_thread():
     en_command = tk.Label(t, name="en_command", text="None")
     en_command.place(x=160, y=215)
     en_dbg = tk.Label(t, name="en_dbg", text="None")
-    en_dbg.place(x=90, y=265)
+    en_dbg.place(x=160, y=265)
+    # start timer a.k.a. scheduler
     timertick()
+    # main Tk loop
     t.mainloop()
 
 
+# setters for Tk GUI elements
 def hull_label(a):
-    t.children["hull"].configure(text=str("Hull = %s " % a))
+    t.children["hull"].configure(text=str("All hulls = %s " % a))
 
 
 def defects_label(a):
-    t.children["defects"].configure(text=str("Defects = %s" % a))
+    t.children["defects"].configure(text=str("All defects = %s" % a))
 
 
 def defects_filtered_label(a):
@@ -134,12 +141,16 @@ if __name__ == '__main__':
         crop_img = img[50:350, 50:350]
         # convert image to gray scale
         gray = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
+        if debug:
+            cv2.imshow('Gray scale', gray)
         # use Gaussian blur
-        blur = cv2.GaussianBlur(gray, (35, 35), 0)
+        blur = cv2.GaussianBlur(src=gray, ksize=(35, 35), sigmaX=0)
+        if debug:
+            cv2.imshow('Blurred', blur)
         # apply threshold to get black and white (binary) image (ROI)
         _, thresh1 = cv2.threshold(blur, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
         if debug:
-            cv2.imshow('Threshold on cropped image', thresh1)
+            cv2.imshow('Threshold', thresh1)
 
         # 2. Analyze ROI
         # find contours
@@ -160,7 +171,7 @@ if __name__ == '__main__':
         cv2.drawContours(drawing, [hull], 0, (0, 0, 255), 0)
         hull = cv2.convexHull(cnt, returnPoints=False)
 
-        # compute defects
+        # compute and plot convexity defects
         defects = cv2.convexityDefects(cnt, hull)
         count_defects = 0
         cv2.drawContours(thresh1, contours, -1, (0, 255, 0), 3)
@@ -185,17 +196,23 @@ if __name__ == '__main__':
         # show analyzed input/output
         if debug:
             all_img = np.hstack((drawing, crop_img))
-            cv2.imshow('Contours', all_img)
+            cv2.imshow('Contours vs image', all_img)
 
-        cv2.imshow('input', img)
+        cv2.imshow('Input', img)
 
         k = cv2.waitKey(50)
         # got ESC key? if yes - exit!
         if k == 27:
             break
+        elif k == 99:  # for 'c' toggle command execution
+            print 'c input'
+            toggle_commands()
+        elif k == 100:  # for 'd' toggle debug mode
+            print 'd input'
+            debug_toggle()
 
         # do not 'change' command to quickly and wait after last one
-        if time.time() - LAST_TIME > 5 and enable_commands:
+        if time.time() - LAST_TIME > COOLDOWN and enable_commands:
             exe = True
             LAST_TIME = time.time()
         else:
@@ -204,11 +221,15 @@ if __name__ == '__main__':
         # check what command to execute and run it
         com = check_command(count_defects, exe)
 
+        delta = time.time() - LAST_TIME
+        to_next = COOLDOWN - delta
+        if to_next < 0:
+            to_next = 0
         # submit some data to GUI
         submit_to_tkinter(hull_label, str(hull.shape[0]))
         submit_to_tkinter(defects_label, str(defects.shape[0]))
         submit_to_tkinter(defects_filtered_label, str(count_defects))
-        submit_to_tkinter(en_command_label, enable_commands)
+        submit_to_tkinter(en_command_label, str("%s, cooldown %.2fs." % (enable_commands, to_next)))
         submit_to_tkinter(en_dbg_label, debug)
         if com:
             submit_to_tkinter(command_label, com)

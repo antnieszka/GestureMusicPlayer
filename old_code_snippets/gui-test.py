@@ -1,10 +1,9 @@
-import cv2
-import wx
-import time
 import threading
 
-from Camera import analyze_camera
+import cv2
+import wx
 
+from old_code_snippets.Camera import analyze_camera
 
 ID_COUNT = wx.NewId()
 myEVT_COUNT = wx.NewEventType()

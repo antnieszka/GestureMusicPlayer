@@ -3,25 +3,18 @@ import numpy as np
 import math
 
 cap = cv2.VideoCapture(0)
-while (cap.isOpened()):
+
+while cap.isOpened():
     ret, img = cap.read()
-    cv2.rectangle(img, (300, 300), (100, 100), (0, 255, 0), 0)
-    crop_img = img[100:300, 100:300]
+    cv2.rectangle(img, (350, 350), (50, 50), (0, 255, 0), 0)
+    crop_img = img[50:350, 50:350]
     grey = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
     value = (35, 35)
     blurred = cv2.GaussianBlur(grey, value, 0)
-    _, thresh1 = cv2.threshold(blurred, 127, 255,
-                               cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    _, thresh1 = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     cv2.imshow('Thresholded', thresh1)
 
-    (version, _, _) = cv2.__version__.split('.')
-
-    if version is '3':
-        image, contours, hierarchy = cv2.findContours(thresh1.copy(), \
-                                                      cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    elif version is '2':
-        contours, hierarchy = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, \
-                                               cv2.CHAIN_APPROX_NONE)
+    image, contours, hierarchy = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
     cnt = max(contours, key=lambda x: cv2.contourArea(x))
 
@@ -51,19 +44,17 @@ while (cap.isOpened()):
         cv2.line(crop_img, start, end, [0, 255, 0], 2)
         # cv2.circle(crop_img,far,5,[0,0,255],-1)
     if count_defects == 1:
-        cv2.putText(img, "I am Vipul", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        cv2.putText(img, "PLAY", (50, 45), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     elif count_defects == 2:
-        str = "This is a basic hand gesture recognizer"
-        cv2.putText(img, str, (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+        cv2.putText(img, "PAUSE", (50, 45), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     elif count_defects == 3:
-        cv2.putText(img, "This is 4 :P", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        cv2.putText(img, "NEXT", (50, 45), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     elif count_defects == 4:
-        cv2.putText(img, "Hi!!!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        cv2.putText(img, "PREVIOUS", (50, 45), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     else:
-        cv2.putText(img, "Hello World!!!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        cv2.putText(img, "VOLUME UP!", (50, 45), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     # cv2.imshow('drawing', drawing)
     # cv2.imshow('end', crop_img)
-    print count_defects
     cv2.imshow('Gesture', img)
     all_img = np.hstack((drawing, crop_img))
     cv2.imshow('Contours', all_img)
