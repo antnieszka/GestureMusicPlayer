@@ -2,6 +2,7 @@
 
 Command music with simple hand gestures.
 
+![Imgur](http://i.imgur.com/pNa43PC.png)
 ![Imgur](http://i.imgur.com/h613pvU.png)
 
 ## How it works
