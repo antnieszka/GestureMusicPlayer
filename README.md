@@ -45,3 +45,4 @@ Tested on:
 - Quora discussion: https://www.quora.com/What-is-the-easiest-way-to-recognise-gestures-in-OpenCV-using-Python
 - Multithreading in TKinter: http://stackoverflow.com/questions/1198262/tkinter-locks-python-when-icon-loaded-and-tk-mainloop-in-a-thread
 - OpenCV blog: http://vipulsharma20.blogspot.com/2015/03/gesture-recognition-using-opencv-python.html
+- Another important tutorial about contours: http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_contours/py_contours_more_functions/py_contours_more_functions.html
