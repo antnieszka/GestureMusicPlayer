@@ -15,6 +15,7 @@ t = None
 debug = False
 enable_commands = False
 REALLY_NOT_DEBUG = True
+CHANGE_VOLUME = True
 COOLDOWN = 5
 LAST_TIME = time.time()
 
@@ -120,8 +121,8 @@ def check_command(c, exe):
             move_prev()
         return "PREVIOUS"
     elif c == 5:
-        # if REALLY_NOT_DEBUG and exe:
-        #     vol_down()
+        if CHANGE_VOLUME and exe:
+            vol_down()
         return "VOLUME CONTROL (disabled)"
     return None
 
