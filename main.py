@@ -15,7 +15,7 @@ t = None
 debug = False
 enable_commands = False
 REALLY_NOT_DEBUG = True
-CHANGE_VOLUME = True
+CHANGE_VOLUME = False
 COOLDOWN = 5
 LAST_TIME = time.time()
 
@@ -123,7 +123,11 @@ def check_command(c, exe):
     elif c == 5:
         if CHANGE_VOLUME and exe:
             vol_down()
-        return "VOLUME CONTROL (disabled)"
+        return "VOLUME CONTROL DOWN"
+    elif c == 6:
+        if CHANGE_VOLUME and exe:
+            vol_down()
+        return "VOLUME CONTROL UP"
     return None
 
 
@@ -172,7 +176,7 @@ if __name__ == '__main__':
         cv2.drawContours(drawing, [hull], 0, (0, 0, 255), 0)
         hull = cv2.convexHull(cnt, returnPoints=False)
 
-        # compute and plot convexity defects
+        # we find convexity defects, which is the deepest point of deviation on the contour
         defects = cv2.convexityDefects(cnt, hull)
         count_defects = 0
         cv2.drawContours(thresh1, contours, -1, (0, 255, 0), 3)
