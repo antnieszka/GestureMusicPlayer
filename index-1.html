@@ -1,0 +1,43 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Unknown </title></head><body>
+<h1 id="gesture-music-player">Gesture Music Player</h1>
+<p>Command music player (for now only VLC) with simple hand gestures. Supported commands:
+- play
+- pause
+- next track
+- previous track
+- volume up (+10%)
+- volume down (-10%)</p>
+<p><img alt="Imgur" src="http://i.imgur.com/pNa43PC.png" /></p>
+<h2 id="how-it-works">How it works</h2>
+<ul>
+<li>Get image from camera</li>
+<li>Convert to gray scale</li>
+<li>Blur the image reduce noise (details of the image are unimportant)</li>
+<li>Use threshold (low pass filter) to get black and white image</li>
+<li>Analyze the received shape to find convex hull/convexity defects</li>
+<li>If in debug mode display visuals</li>
+<li>Send some info to Tk control window</li>
+</ul>
+<h3 id="requirements">Requirements</h3>
+<ul>
+<li>python (tested on 2.7.12, should work on other versions)</li>
+<li>OpenCV-Python &gt;= 3.0 (more here: http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_tutorials.html, sometimes named as python-opencv package in system repositories)</li>
+<li>Tkinter (ussually comes with Python or as a addtional package)</li>
+<li>numpy</li>
+<li>vlc-ctrl (https://github.com/amol9/vlc-ctrl)</li>
+</ul>
+<p>Pip-installable list:
+<code>numpy
+vlc-ctrl</code></p>
+<p>Tested on:</p>
+<p><img alt="openSUSE" src="https://en.opensuse.org/images/9/93/Opensuse_1-2.png" /></p>
+<h3 id="credits-and-links">Credits and links</h3>
+<ul>
+<li>Python bindings for VLC from: https://wiki.videolan.org/Python_bindings</li>
+<li>Python tool for controlling VLC https://github.com/amol9/vlc-ctrl</li>
+<li>Quora discussion: https://www.quora.com/What-is-the-easiest-way-to-recognise-gestures-in-OpenCV-using-Python</li>
+<li>Multithreading in TKinter: http://stackoverflow.com/questions/1198262/tkinter-locks-python-when-icon-loaded-and-tk-mainloop-in-a-thread</li>
+<li>OpenCV blog: http://vipulsharma20.blogspot.com/2015/03/gesture-recognition-using-opencv-python.html</li>
+<li>Another important tutorial about contours: http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_contours/py_contours_more_functions/py_contours_more_functions.html</li>
+</ul>
+</body></html>
