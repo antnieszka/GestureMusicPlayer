@@ -1,10 +1,10 @@
 import math
-import tkFont
+from tkinter import font as tkFont
 import numpy as np
 import cv2  # required 3+
-import Tkinter as tk
-import thread
-import Queue
+import tkinter as tk
+import _thread as thread
+import queue as Queue
 import time
 
 from commands import *
@@ -210,10 +210,10 @@ if __name__ == '__main__':
         if k == 27:
             break
         elif k == 99:  # for 'c' toggle command execution
-            print 'c input'
+            print ('c input')
             toggle_commands()
         elif k == 100:  # for 'd' toggle debug mode
-            print 'd input'
+            print ('d input')
             debug_toggle()
 
         # do not 'change' command to quickly and wait after last one
