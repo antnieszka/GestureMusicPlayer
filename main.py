@@ -3,7 +3,7 @@ from tkinter import font as tkFont
 import numpy as np
 import cv2  # required 3+
 import tkinter as tk
-import _thread as thread
+from threading import Thread
 import queue as Queue
 import time
 
@@ -132,7 +132,8 @@ def check_command(c, exe):
 
 
 if __name__ == '__main__':
-    thread.start_new_thread(main_tk_thread, ())
+    t = Thread(target=main_tk_thread)
+    t.start()
 
     cap = cv2.VideoCapture(0)
 
