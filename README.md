@@ -22,6 +22,10 @@ Command music player (for now only VLC) with simple hand gestures. Supported com
 
 ### Requirements
 
++ Run requirements.txt
+
+	`pip install -r requirements.txt`
+
 - python (tested on 2.7.12, should work on other versions)
 - OpenCV-Python >= 3.0 (more here: http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_tutorials.html, sometimes named as python-opencv package in system repositories)
 - Tkinter (ussually comes with Python or as a addtional package)

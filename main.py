@@ -1,10 +1,10 @@
 import math
-import tkFont
+from tkinter import font as tkFont
 import numpy as np
 import cv2  # required 3+
-import Tkinter as tk
-import thread
-import Queue
+import tkinter as tk
+from threading import Thread
+import queue as Queue
 import time
 
 from commands import *
@@ -132,7 +132,8 @@ def check_command(c, exe):
 
 
 if __name__ == '__main__':
-    thread.start_new_thread(main_tk_thread, ())
+    t = Thread(target=main_tk_thread, daemon=True)
+    t.start()
 
     cap = cv2.VideoCapture(0)
 
@@ -159,8 +160,8 @@ if __name__ == '__main__':
 
         # 2. Analyze ROI
         # find contours
-        _, contours, hierarchy = cv2.findContours(thresh1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        # _, contours, hierarchy = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        contours, hierarchy = cv2.findContours(thresh1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # contours, hierarchy = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
         # get max contour area
         cnt = max(contours, key=lambda x: cv2.contourArea(x))
@@ -210,10 +211,10 @@ if __name__ == '__main__':
         if k == 27:
             break
         elif k == 99:  # for 'c' toggle command execution
-            print 'c input'
+            print ('c input')
             toggle_commands()
         elif k == 100:  # for 'd' toggle debug mode
-            print 'd input'
+            print ('d input')
             debug_toggle()
 
         # do not 'change' command to quickly and wait after last one
