@@ -132,7 +132,7 @@ def check_command(c, exe):
 
 
 if __name__ == '__main__':
-    t = Thread(target=main_tk_thread)
+    t = Thread(target=main_tk_thread, daemon=True)
     t.start()
 
     cap = cv2.VideoCapture(0)
@@ -160,8 +160,8 @@ if __name__ == '__main__':
 
         # 2. Analyze ROI
         # find contours
-        _, contours, hierarchy = cv2.findContours(thresh1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        # _, contours, hierarchy = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        contours, hierarchy = cv2.findContours(thresh1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # contours, hierarchy = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
         # get max contour area
         cnt = max(contours, key=lambda x: cv2.contourArea(x))
